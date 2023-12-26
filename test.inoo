@@ -1,0 +1,69 @@
+ 
+const int inputPinX = 2;
+const int inputPinY = 4;
+const int outputPinX = 3;
+const int outputPinY = 5;
+const int countThresholdX = 10;
+const int countThresholdY = 5;
+
+int countX = 0;
+int countY = 0;
+int prevInputStateX = LOW;
+int prevInputStateY = LOW;
+bool alreadyCountedX = false;
+bool alreadyCountedY = false;
+
+void setup() {
+  pinMode(inputPinX, INPUT);
+  pinMode(inputPinY, INPUT);
+  pinMode(outputPinX, OUTPUT);
+  pinMode(outputPinY, OUTPUT);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Check X count
+  int inputStateX = digitalRead(inputPinX);
+
+  if (inputStateX == HIGH && prevInputStateX == LOW && !alreadyCountedX) {
+    countX++;
+    Serial.print("Count X: ");
+    Serial.println(countX);
+
+    if (countX >= countThresholdX) {
+      Serial.println("Count threshold X reached. Changing output pin X state.");
+      digitalWrite(outputPinX, HIGH);
+      countX = 0;
+    }
+
+    alreadyCountedX = true;
+  } else if (inputStateX == LOW) {
+    alreadyCountedX = false;
+  }
+
+  prevInputStateX = inputStateX;
+
+  // Check  Y count
+  int inputStateY = digitalRead(inputPinY);
+
+  if (inputStateY == HIGH && prevInputStateY == LOW && !alreadyCountedY) {
+    countY++;
+    Serial.print("Count Y: ");
+    Serial.println(countY);
+
+    if (countY >= countThresholdY) {
+      Serial.println("Count threshold Y reached. Changing output pin Y state.");
+      digitalWrite(outputPinY, HIGH);
+      countY = 0;
+    }
+
+    alreadyCountedY = true;
+  } else if (inputStateY == LOW) {
+    alreadyCountedY = false;
+  }
+
+  prevInputStateY = inputStateY;
+
+  delay(100);
+}
